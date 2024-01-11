@@ -5,15 +5,38 @@ const D_button = document.getElementById("d");
 const A_button = document.getElementById("a");
 const E_button = document.getElementById("E");
 
+
+const ANOTHER_NOTES_INTERVAL = 5000 ; // millisecond, 
+const RED_DOT_INTERVAL = 2000 ; // millisecond, 
+
 e = ["e", "f", "g"];
 b = ["B", "c", "d"];
 g = ["G", "A"];
 d = ["D", "E", "F"];
 a = ["A,", "B,", "C"];
 E = ["E,", "F,", "G,"];
+
 function generate(arr) {
-  if(arr == '' || arr == null || arr == undefined || arr.length == 0){
-    all = ["e", "f", "g", "B", "c", "d", "G", "A", "D", "E", "F", "A,", "B,", "C", "E,", "F,", "G,"]
+  if (arr == "" || arr == null || arr == undefined || arr.length == 0) {
+    all = [
+      "e",
+      "f",
+      "g",
+      "B",
+      "c",
+      "d",
+      "G",
+      "A",
+      "D",
+      "E",
+      "F",
+      "A,",
+      "B,",
+      "C",
+      "E,",
+      "F,",
+      "G,",
+    ];
     return all[Math.floor(Math.random() * all.length)];
   }
   return arr[Math.floor(Math.random() * arr.length)];
@@ -24,15 +47,18 @@ function renderABC() {
     ${generate(e)} ${generate(b)} ${generate(g)} ${generate(d)}\
   ${generate(a)} ${generate(E)}`;
   document.getElementById("abc-render").innerHTML = "";
-  ABCJS.renderAbc("abc-render", abcNotation, {
-    responsive: "resize" 
-
+  visualObj =  ABCJS.renderAbc("abc-render", abcNotation, {
+    responsive: "resize",
   });
+  var timingCallbacks = new ABCJS.TimingCallbacks(visualObj[0], {
+    beatCallback: beatCallback,
+    eventCallback: eventCallback,
+  });
+  timingCallbacks.start()
+  
 }
 
-renderABC();
-
-setInterval(renderABC, 5000);
+setInterval(renderABC, ANOTHER_NOTES_INTERVAL);
 
 function changeAllNotesTo(str) {
   if (str == "e") {
@@ -78,4 +104,37 @@ function changeAllNotesTo(str) {
     a = ["E,", "F,", "G,"];
     E = ["E,", "F,", "G,"];
   }
+}
+function beatCallback(
+  currentBeat,
+  totalBeats,
+  lastMoment,
+  position,
+  debugInfo
+) {
+}
+function eventCallback(ev) {
+  if(ev == null || ev == undefined){
+    var lastEls = [];
+  }else{
+    colorElements(ev.elements);
+  }
+
+}
+var lastEls = [];
+function colorElements(els) {
+  var i;
+  var j;
+  for (i = 0; i < lastEls.length; i++) {
+    for (j = 0; j < lastEls[i].length; j++) {
+      lastEls[i][j].classList.remove("color");
+    }
+  }
+  for (i = 0; i < els.length; i++) {
+    for (j = 0; j < els[i].length; j++) {
+      els[i][j].classList.add("color");
+
+    }
+  }
+  lastEls = els;
 }
